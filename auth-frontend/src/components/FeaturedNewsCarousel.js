@@ -110,7 +110,7 @@ const FeaturedNewsCarousel = ({ newsData }) => {
           
           <button
             className="btn btn-danger px-4 py-2"
-            onClick={() => navigate(`/news/${currentNews.id}`)}
+            onClick={() => navigate(`/news`)} //${currentNews.id}`
           >
             {language === 'en' ? 'Read Full Story' : 'पुरा समाचार पढ्नुहोस्'}
           </button>

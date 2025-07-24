@@ -20,19 +20,19 @@ const QuickActions = () => {
       icon: <FaTint className="icon-donate" style={{ fontSize: '2rem' }} />,
       title: 'Donate Blood',
       subtitle: 'Give the gift of life',
-      to: '/donate-blood',
+      to: '/donate',
     },
     {
       icon: <FaSearchLocation className="icon-find" style={{ fontSize: '2rem' }} />,
       title: 'Find BloodCare Near You',
       subtitle: 'Locate nearby centers',
-      to: '/find-red-cross',
+      to: '/blood-banks',
     },
     {
       icon: <FaHospital className="icon-bank" style={{ fontSize: '2rem' }} />,
       title: 'Blood Bank',
       subtitle: 'Check real-time availability',
-      to: '/blood-bank',
+      to: '/blood-banks',
     }
   ];
 

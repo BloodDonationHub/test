@@ -94,7 +94,7 @@ const Home = () => {
                 </p>
                 <button
                   className="btn btn-outline-danger mt-2"
-                  onClick={() => navigate("/about")}
+                  onClick={() => navigate("/about/introduction")}
                 >
                   {t("learnMore") || "Our Story"}
                 </button>
@@ -259,13 +259,13 @@ const Home = () => {
           <div className="d-flex justify-content-center gap-3">
             <button
               className="btn btn-light btn-lg px-4 py-2 fw-bold text-danger"
-              onClick={() => navigate("/register")}
+              onClick={() => navigate("/become-member")}
             >
               {t("joinNow") || "Register Now"}
             </button>
             <button
               className="btn btn-outline-light btn-lg px-4 py-2"
-              onClick={() => navigate("/about")}
+              onClick={() => navigate("/about/introduction")}
             >
               {t("learnHow") || "Learn How It Works"}
             </button>
