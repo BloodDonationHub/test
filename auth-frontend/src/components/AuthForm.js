@@ -15,9 +15,9 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { language = 'en' } = useLanguage(); // Default to English if context not provided
+  const { language = 'en' } = useLanguage();
 
-  // Complete translations with all required keys
+  // Basic translations
   const translations = {
     en: {
       signup: 'Sign Up',
@@ -49,10 +49,8 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
     }
   };
 
-  // Safe translation function with fallbacks
   const translate = (key) => {
-    const currentLang = translations[language] || translations.en;
-    return currentLang[key] || translations.en[key] || key;
+    return translations[language]?.[key] || translations.en[key] || key;
   };
 
   const handleChange = (e) => {
@@ -66,30 +64,71 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
     setIsLoading(true);
 
     try {
-      const url = `http://localhost:5000/api/auth/${type}`;
-      const { data } = await axios.post(url, formData);
-      
-      login(data.token, data.userId, data.username);
-      
+      // For signup, get user location first
+      let locationData = null;
+      if (type === 'signup') {
+        try {
+          const position = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject);
+          });
+          locationData = {
+            type: "Point",
+            coordinates: [position.coords.longitude, position.coords.latitude]
+          };
+        } catch (geoError) {
+          console.warn("Location access denied or failed, proceeding without location");
+          // Continue signup without location if user denies permission
+        }
+      }
+
+      // Prepare payload based on login/signup
+      const payload = type === 'login'
+        ? { email: formData.email, password: formData.password }
+        : {
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          ...(locationData && { location: locationData }) // Only include if we have it
+        };
+
+      const { data } = await axios.post(
+        `http://localhost:5000/api/auth/${type}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      // Handle successful login/signup
+      login(data.token, {
+        id: data.user._id,
+        username: data.user.username,
+        email: data.user.email,
+        ...(data.user.location && { location: data.user.location }) // Include location if available
+      });
+
       if (onClose) {
         onClose();
       } else {
         navigate('/dashboard');
       }
     } catch (err) {
-      const errorMessage = err.response?.data?.message;
-      if (errorMessage === 'User already exists') {
+      const errorMessage = err.response?.data?.message || err.message;
+      if (errorMessage.includes('exists')) {
         setError(translate('userExists'));
-      } else if (errorMessage === 'Invalid credentials') {
+      } else if (errorMessage.includes('credentials')) {
         setError(translate('invalidCredentials'));
+      } else if (err.response?.status === 400) {
+        setError(translate('validationError'));
       } else {
-        setError(translate('serverError'));
+        setError(translate('serverError') + ': ' + errorMessage);
       }
     } finally {
       setIsLoading(false);
     }
   };
-
   const switchAuthType = () => {
     setError('');
     setFormData({ username: '', email: '', password: '' });
@@ -101,11 +140,17 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
   };
 
   return (
-    <div className={`auth-form ${darkMode ? 'dark-mode' : ''}`}>
-      <div className="auth-form-container">
-        <h2>{translate(type === 'login' ? 'login' : 'signup')}</h2>
-        
-        {error && <div className="auth-error">{error}</div>}
+    <div className={`auth-container ${darkMode ? 'dark-mode' : ''}`}>
+      <div className="auth-card">
+        {onClose && (
+          <button className="auth-close" onClick={onClose} aria-label="Close">
+            &times;
+          </button>
+        )}
+
+        <h2 className="auth-title">{translate(type === 'login' ? 'login' : 'signup')}</h2>
+
+        {error && <div className="auth-error-message">{error}</div>}
 
         <form onSubmit={handleSubmit}>
           {type === 'signup' && (
@@ -117,9 +162,9 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
                 name="username"
                 value={formData.username}
                 onChange={handleChange}
+                className={`form-control ${darkMode ? 'dark-input' : ''}`}
                 required
                 minLength="3"
-                className={darkMode ? 'dark-input' : ''}
               />
             </div>
           )}
@@ -132,8 +177,8 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
               name="email"
               value={formData.email}
               onChange={handleChange}
+              className={`form-control ${darkMode ? 'dark-input' : ''}`}
               required
-              className={darkMode ? 'dark-input' : ''}
             />
           </div>
 
@@ -145,44 +190,37 @@ const AuthForm = ({ type = 'login', darkMode = false, onClose }) => {
               name="password"
               value={formData.password}
               onChange={handleChange}
+              className={`form-control ${darkMode ? 'dark-input' : ''}`}
               required
               minLength="6"
-              className={darkMode ? 'dark-input' : ''}
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
-            className={`auth-submit ${darkMode ? 'dark-button' : ''}`}
+            className={`auth-submit-btn ${darkMode ? 'dark-button' : ''}`}
           >
             {isLoading ? (
-              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <>
+                <span className="spinner" aria-hidden="true"></span>
+                {translate('processing')}
+              </>
             ) : (
               translate(type === 'login' ? 'submitLogin' : 'submitSignup')
             )}
           </button>
         </form>
 
-        <div className="auth-switch">
-          <button 
-            type="button" 
+        <div className="auth-footer">
+          <button
+            type="button"
             onClick={switchAuthType}
             className={`auth-switch-btn ${darkMode ? 'dark-link' : ''}`}
           >
             {translate(type === 'login' ? 'switchToSignup' : 'switchToLogin')}
           </button>
         </div>
-
-        {onClose && (
-          <button 
-            className={`auth-close-btn ${darkMode ? 'dark-button' : ''}`}
-            onClick={onClose}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        )}
       </div>
     </div>
   );

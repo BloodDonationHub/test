@@ -1,32 +1,30 @@
-/* Auth Form Container */
-.auth-form {
-  max-width: 400px;
-  margin: 2rem auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
 }
 
-/* Dark Mode Styles */
-.auth-form.dark-mode {
+.auth-card {
+  position: relative;
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.dark-mode .auth-card {
   background: #2d3748;
   color: white;
 }
 
-.auth-form.dark-mode h2 {
-  color: white;
-}
-
-/* Form Elements */
-.auth-form-container {
-  position: relative;
-}
-
-.auth-form h2 {
+.auth-title {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #2d3748;
+  color: inherit;
 }
 
 .form-group {
@@ -39,37 +37,34 @@
   font-weight: 500;
 }
 
-.form-group input {
+.form-control {
   width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e2e8f0;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 1rem;
 }
 
-/* Dark Mode Inputs */
 .dark-input {
   background: #4a5568;
+  border-color: #4a5568;
   color: white;
-  border-color: #4a5568 !important;
 }
 
-/* Error Message */
-.auth-error {
+.auth-error-message {
   color: #e53e3e;
+  background: #fed7d7;
   padding: 0.75rem;
-  margin-bottom: 1rem;
-  background: #fff5f5;
   border-radius: 4px;
+  margin-bottom: 1rem;
   text-align: center;
 }
 
-.dark-mode .auth-error {
+.dark-mode .auth-error-message {
   background: #742a2a;
 }
 
-/* Submit Button */
-.auth-submit {
+.auth-submit-btn {
   width: 100%;
   padding: 0.75rem;
   background: #4299e1;
@@ -77,24 +72,21 @@
   border: none;
   border-radius: 4px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   margin-top: 1rem;
 }
 
-.auth-submit:hover {
-  background: #3182ce;
-}
-
 .dark-button {
-  background: #2b6cb0 !important;
+  background: #63b3ed;
 }
 
-.dark-button:hover {
-  background: #2c5282 !important;
+.auth-submit-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
-/* Switch Between Login/Signup */
-.auth-switch {
+.auth-footer {
   text-align: center;
   margin-top: 1.5rem;
 }
@@ -104,43 +96,35 @@
   border: none;
   color: #4299e1;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
 }
 
 .dark-link {
-  color: #90cdf4 !important;
+  color: #90cdf4;
 }
 
-/* Close Button (for modal) */
-.auth-close-btn {
+.auth-close {
   position: absolute;
-  top: -10px;
-  right: -10px;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #e53e3e;
-  color: white;
+  top: 1rem;
+  right: 1rem;
+  background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.5rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  color: inherit;
 }
 
-/* Loading Spinner */
-.spinner-border {
+.spinner {
   display: inline-block;
   width: 1rem;
   height: 1rem;
-  vertical-align: text-bottom;
-  border: 0.15em solid currentColor;
-  border-right-color: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
-  animation: spinner-border 0.75s linear infinite;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 0.5rem;
 }
 
-@keyframes spinner-border {
+@keyframes spin {
   to { transform: rotate(360deg); }
 }
