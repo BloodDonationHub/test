@@ -111,14 +111,7 @@ const BloodSearch = () => {
             setLoading(false);
         }
     };
-    console.log('Current state:', {
-        userLocation,
-        bloodType,
-        distance,
-        bloodBanks,
-        loading,
-        error
-    });
+    
     return (
         <div className="blood-donation-app">
             <header className="app-header">

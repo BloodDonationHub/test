@@ -41,7 +41,7 @@ function App() {
                  <Route path="/tips" element={<Tips />} />
                   <Route path="/events" element={<Media />} />
                 <Route path="/donate-to-us" element={<DonateToUs />} />
-                <Route path="/blood-banks" element={<BloodSearch />} />
+                <Route path="/blood-search" element={<BloodSearch />} />
                <Route path="/blood-banks" element={<BloodBank />} />
                <Route path="/news" element={<News/>}/>
                <Route path="/donate" element={<DonateBlood/>}/>

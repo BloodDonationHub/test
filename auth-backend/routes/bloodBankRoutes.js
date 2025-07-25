@@ -1,4 +1,3 @@
-// routes/bloodBankRoutes.js
 const express = require('express');
 const router = express.Router();
 const BloodBank = require('../models/BloodBank');
@@ -9,63 +8,95 @@ router.get('/search', async (req, res) => {
     try {
         const { latitude, longitude, bloodType, maxDistance = 50 } = req.query;
 
+        // Validate required parameters
         if (!latitude || !longitude || !bloodType) {
             return res.status(400).json({
                 error: 'Latitude, longitude, and bloodType are required parameters'
             });
         }
 
-        const bloodTypes = [
-            'O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'
-        ];
-
-        if (!bloodTypes.includes(bloodType)) {
+        // Validate blood type
+        const validBloodTypes = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'];
+        if (!validBloodTypes.includes(bloodType)) {
             return res.status(400).json({
-                error: 'Invalid blood type. Must be one of: O+, O-, A+, A-, B+, B-, AB+, AB-'
+                error: 'Invalid blood type. Must be one of: ' + validBloodTypes.join(', ')
             });
         }
 
+        // Parse and validate coordinates
         const lat = parseFloat(latitude);
         const lng = parseFloat(longitude);
         const distance = parseFloat(maxDistance);
 
-        // Find blood banks with the requested blood type in stock within maxDistance km
+        if (isNaN(lat)) {
+            return res.status(400).json({ error: `Invalid latitude: ${latitude}` });
+        }
+        if (isNaN(lng)) {
+            return res.status(400).json({ error: `Invalid longitude: ${longitude}` });
+        }
+        if (isNaN(distance)) {
+            return res.status(400).json({ error: `Invalid maxDistance: ${maxDistance}` });
+        }
+
+        // Validate coordinate ranges
+        if (lat < -90 || lat > 90) {
+            return res.status(400).json({ error: 'Latitude must be between -90 and 90' });
+        }
+        if (lng < -180 || lng > 180) {
+            return res.status(400).json({ error: 'Longitude must be between -180 and 180' });
+        }
+
+        // Find blood banks with geospatial query
         const bloodBanks = await BloodBank.find({
             location: {
                 $near: {
                     $geometry: {
                         type: "Point",
-                        coordinates: [lng, lat]
+                        coordinates: [lng, lat]  // MongoDB uses [longitude, latitude]
                     },
-                    $maxDistance: distance * 1000 // Convert km to meters
+                    $maxDistance: distance * 1000  // Convert km to meters
                 }
             },
             [`bloodInventory.${bloodType}`]: { $gt: 0 }
         });
 
-        // Add distance information to each blood bank
-        // In routes/bloodBankRoutes.js
-        const results = bloodBanks.map(bank => ({
-            id: bank._id,
-            name: bank.name,
-            address: bank.address,
-            contact: bank.contact,
-            location: bank.location,
-            distance: calculateDistance(lat, lng, ).toFixed(2),
-            unitsAvailable: bank.bloodInventory[bloodType],
-            // Add real-worlSd properties:
-            hours: "9AM-5PM", // Real hours
-            website: "https://redcross.org", // Real URL
-            lastUpdated: new Date() // Track freshness
-        }));
+        // Process results with proper distance calculation
+        const results = bloodBanks.map(bank => {
+            const [bankLng, bankLat] = bank.location.coordinates;
+            
+            // Calculate distance with validation
+            let calculatedDistance;
+            try {
+                calculatedDistance = calculateDistance(lat, lng, bankLat, bankLng);
+            } catch (err) {
+                console.error('Distance calculation error:', err);
+                calculatedDistance = 0;
+            }
+
+            return {
+                id: bank._id,
+                name: bank.name,
+                address: bank.address,
+                contact: bank.contact,
+                location: bank.location,
+                distance: calculatedDistance.toFixed(2),
+                unitsAvailable: bank.bloodInventory[bloodType],
+                hours: bank.hours || "9AM-5PM",  // Default if not specified
+                website: bank.website || "https://redcross.org",
+                lastUpdated: bank.updatedAt || new Date()
+            };
+        });
 
         // Sort by distance (nearest first)
-        results.sort((a, b) => a.distance - b.distance);
+        results.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
 
         res.json(results);
     } catch (error) {
         console.error('Error searching blood banks:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ 
+            error: 'Internal server error',
+            message: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
     }
 });
 

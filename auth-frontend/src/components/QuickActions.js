@@ -26,7 +26,7 @@ const QuickActions = () => {
       icon: <FaSearchLocation className="icon-find" style={{ fontSize: '2rem' }} />,
       title: 'Find BloodCare Near You',
       subtitle: 'Locate nearby centers',
-      to: '/blood-banks',
+      to: '/blood-search',
     },
     {
       icon: <FaHospital className="icon-bank" style={{ fontSize: '2rem' }} />,
