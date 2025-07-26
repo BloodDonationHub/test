@@ -5,6 +5,7 @@ import { FiSearch } from 'react-icons/fi';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import AuthForm from '../components/AuthForm';
+import BloodForm from '../components/BloodForm1';
 
 const Navbar = ({ toggleDarkMode, darkMode }) => {
     const [isOpen, setIsOpen] = useState(false);
@@ -142,7 +143,7 @@ const Navbar = ({ toggleDarkMode, darkMode }) => {
                                 <li><Link className="dropdown-item" to="/become-member" onClick={handleLinkClick}>{translate('member')}</Link></li>
                                 <li><Link className="dropdown-item" to="/become-volunteer" onClick={handleLinkClick}>{translate('volunteer')}</Link></li>
                                 <li><Link className="dropdown-item" to="/donate" onClick={handleLinkClick}>{translate('donate')}</Link></li>
-                                <li><Link className="dropdown-item" to="/donate-to-us" onClick={handleLinkClick}>{translate('donateToUs')}</Link></li>
+                                <li><Link className="dropdown-item" to="/BloodForm" onClick={handleLinkClick}>{translate('Blood-Mactch Checker')}</Link></li>
                             </ul>
                         </li>
 

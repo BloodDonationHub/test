@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaHeartbeat, FaMapMarkerAlt, FaClock, FaUsers, FaInfoCircle, FaArrowRight } from 'react-icons/fa';
 
+
 const donationCamps = [
   {
     day: 'Sunday',
@@ -81,6 +82,7 @@ const preparationTips = [
 
 const DonateBlood = () => {
   const [showModal, setShowModal] = useState(false);
+ 
   const [activeDay, setActiveDay] = useState(getCurrentDay());
   const [form, setForm] = useState({
     age: '',

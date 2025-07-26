@@ -14,7 +14,7 @@ import BloodBank from './components/BloodBank';
 import DonateBlood from './components/DonateBlood';
 import News from './components/News';
 import Media from './components/Media';
-import DonateToUs from './components/DonateToUs';
+import BloodForm from './components/BloodForm';
 import Events from './components/Event';
 import Tips from './components/Tips';
 import Introduction from './components/Introduction ';
@@ -23,6 +23,7 @@ import VaccineInfo from './components/Vaccine';
 import BecomeMember from './components/BecomeMember';
 import NearbyBloodBanks from './pages/NearbyBloodBanks';
 import BloodSearch from './components/BloodSearch';
+
 
 function App() {
   return (
@@ -40,7 +41,7 @@ function App() {
                 <Route path="/about/introduction" element={<Introduction />} />
                  <Route path="/tips" element={<Tips />} />
                   <Route path="/events" element={<Media />} />
-                <Route path="/donate-to-us" element={<DonateToUs />} />
+                <Route path="/BloodForm" element={<BloodForm />} />
                 <Route path="/blood-search" element={<BloodSearch />} />
                <Route path="/blood-banks" element={<BloodBank />} />
                <Route path="/news" element={<News/>}/>
